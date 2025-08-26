@@ -1,0 +1,33 @@
+{
+    "manifest_version": 3,
+    "name": "GtR Project Analyzer",
+    "version": "1.0.0",
+    "description": "Analyzes GtR project outcomes to find software mentions with persistent side panel.",
+    "permissions": [
+        "activeTab",
+        "storage",
+        "sidePanel"
+    ],
+    "host_permissions": [
+        "https://shiyizhu-gtroutcomegetter.hf.space/*"
+    ],
+    "icons": {
+        "16": "icons/icon16.png",
+        "48": "icons/icon48.png",
+        "128": "icons/icon128.png"
+    },
+    "action": {
+        "default_title": "Open GtR Project Analyzer",
+        "default_icon": {
+            "16": "icons/icon16.png",
+            "48": "icons/icon48.png",
+            "128": "icons/icon128.png"
+        }
+    },
+    "side_panel": {
+        "default_path": "sidepanel.html"
+    },
+    "background": {
+        "service_worker": "background.js"
+    }
+}

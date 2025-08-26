@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>GtR Project Analyzer</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 20px;
+            min-height: calc(100vh - 140px);
+        }
+
+        .project-info {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .project-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .project-ref {
+            font-size: 12px;
+            color: #666;
+            background: #f0f0f0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .analyze-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .analyze-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .status.success {
+            background: rgba(76, 175, 80, 0.1);
+            color: #2e7d32;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .status.error {
+            background: rgba(244, 67, 54, 0.1);
+            color: #c62828;
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+
+        .status.info {
+            background: rgba(33, 150, 243, 0.1);
+            color: #1565c0;
+            border: 1px solid rgba(33, 150, 243, 0.3);
+        }
+
+        .results {
+            margin-top: 20px;
+        }
+
+        .results-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px 12px 0 0;
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+            color: #333;
+        }
+
+        .results-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 0 0 12px 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .software-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: background-color 0.2s ease;
+        }
+
+        .software-item:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .software-item:last-child {
+            border-bottom: none;
+        }
+
+        .software-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .software-details {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .links-container {
+            margin-top: 10px;
+        }
+
+        .software-url {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 12px;
+            display: block;
+            margin: 3px 0;
+            padding: 5px 8px;
+            border-radius: 4px;
+            word-break: break-all;
+            transition: all 0.2s ease;
+            background: rgba(102, 126, 234, 0.1);
+            border-left: 3px solid #667eea;
+        }
+
+        .software-url:hover {
+            background: rgba(102, 126, 234, 0.2);
+            text-decoration: underline;
+        }
+
+        .software-url.primary-link {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            border-left: 3px solid #667eea;
+        }
+
+        .archive-btn {
+            font-size: 10px;
+            padding: 3px 8px;
+            background: rgba(255, 152, 0, 0.2);
+            color: #e65100;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .archive-btn:hover:not(:disabled) {
+            background: rgba(255, 152, 0, 0.3);
+        }
+
+        .archive-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stats-grid.four-cards {
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #666;
+            line-height: 1.2;
+        }
+
+        .stat-card.detected {
+            border-left: 4px solid #ff9800;
+        }
+
+        .stat-card.detected .stat-number {
+            color: #e65100;
+        }
+
+        .stat-card.extracted {
+            border-left: 4px solid #4caf50;
+        }
+
+        .stat-card.extracted .stat-number {
+            color: #2e7d32;
+        }
+
+        .stat-card.rate {
+            border-left: 4px solid #9c27b0;
+        }
+
+        .stat-card.rate .stat-number {
+            color: #7b1fa2;
+        }
+
+        .analysis-summary {
+            margin: 10px 0;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .summary-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .summary-content {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .archive-tip {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+        }
+
+        .archive-tip-text {
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>GtR Analyzer</h1>
+        <p>Intelligent software outcome detection with archive lookup</p>
+    </div>
+
+    <div class="content">
+        <div class="project-info" id="projectInfo" style="display: none;">
+            <div class="project-title" id="projectTitle">No project detected</div>
+            <div class="project-ref" id="projectRef"></div>
+        </div>
+
+        <button class="analyze-btn" id="analyzeBtn">
+            <span id="btnText">Analyze Current Project</span>
+        </button>
+
+        <div id="status" style="display: none;"></div>
+
+        <div class="stats-grid" id="statsGrid" style="display: none;">
+            <div class="stat-card">
+                <div class="stat-number" id="totalOutcomes">0</div>
+                <div class="stat-label">Total Outcomes</div>
+            </div>
+            <div class="stat-card detected">
+                <div class="stat-number" id="detectedCount">0</div>
+                <div class="stat-label">Detected by AI</div>
+            </div>
+            <div class="stat-card extracted">
+                <div class="stat-number" id="extractedCount">0</div>
+                <div class="stat-label">Successfully Extracted</div>
+            </div>
+            <div class="stat-card rate">
+                <div class="stat-number" id="successRate">0%</div>
+                <div class="stat-label">Extraction Success Rate</div>
+            </div>
+        </div>
+
+        <div class="results" id="results" style="display: none;">
+            <div class="results-header">
+                <span id="resultsTitle">Software Products Found</span>
+            </div>
+
+            <div class="results-content" id="resultsContent"></div>
+        </div>
+    </div>
+
+    <script src="sidepanel.js"></script>
+</body>
+
+</html>
