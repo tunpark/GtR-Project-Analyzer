@@ -4,7 +4,7 @@ GtR Project Analyzer is a Chrome browser extension designed to enhance the exper
 
 ## Features
 
-* **Intelligent Software Detection**: Utilizes an AI model hosted on Hugging Face Spaces to analyze the text of project outcomes and identify those that are likely related to software.
+* **Intelligent Software Detection**: Utilizes an API hosted on Hugging Face Spaces to analyze the text of project outcomes and identify those that are likely related to software.
 * **Detailed Analysis Summary**: Presents a clear, quantitative summary in the side panel, including:
     * The total number of software-related outcomes found.
     * How many were initially detected by the AI.
